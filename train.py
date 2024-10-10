@@ -7,8 +7,7 @@ from datetime import datetime
 import torch
 from torch.utils.data.dataloader import DataLoader
 from pytorch_metric_learning import losses, miners, distances
-from peft import LoraConfig, get_peft_model
-from peft import PeftModel
+
 from torch.utils.tensorboard import SummaryWriter
 
 from utils import util, parser, commons, test
@@ -29,10 +28,8 @@ logging.info(f"Using {torch.cuda.device_count()} GPUs")
 #### Creation of Datasets
 logging.debug(f"Loading gsv_cities and {args.dataset_name} from folder {args.datasets_folder}")
 
-
-
 resize_tmp = args.resize
-args.resize = [448, 448]
+args.resize = [332, 332]
 val_ds = base_dataset.BaseDataset(args, "val")
 logging.info(f"Val set: {val_ds}")
 
@@ -54,20 +51,8 @@ if args.aggregation == "netvlad":
     else:
         args.features_dim = args.clusters * dinov2_network.CHANNELS_NUM[args.backbone]
 
-    
-        
 args.resize = resize_tmp
 
-if args.use_lora:
-    # model, _, best_r1, start_epoch_num, not_improved_num = util.resume_train(args, model, strict=False)
-    trainable_layers = dinov2_network.control_trainable_layer(args.trainable_layers, args.backbone)
-    lora_modules = []
-    for layer in trainable_layers:
-        lora_modules += [
-            f"{layer}.attn.q", f"{layer}.attn.k", f"{layer}.attn.v", f"{layer}.attn.proj",
-            f"{layer}.mlp.fc1", f"{layer}.mlp.fc2"]
-    lora_config = LoraConfig(r=64, lora_alpha=128, use_dora= False, target_modules=lora_modules, lora_dropout=0.01, modules_to_save=["aggregation"])
-    model = get_peft_model(model, lora_config)
 
 if args.aggregation == "netvlad" and args.use_linear and args.resume != None:
     for name, param in model.named_parameters():
@@ -86,10 +71,7 @@ writer = SummaryWriter('../../tf-logs')
 #### Setup Optimizer and Loss
 optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
 if not args.resume:
-    if not args.use_extra_datasets:
-        scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=1, end_factor=0.2, total_iters=4000)
-    else:
-        scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=1, end_factor=0.2, total_iters=15000)
+    scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=1, end_factor=0.2, total_iters=4000)
 criterion = losses.MultiSimilarityLoss(alpha=1.0, beta=50, base=0.0, distance=distances.CosineSimilarity())
 miner = miners.MultiSimilarityMiner(epsilon=0.1, distance=distances.CosineSimilarity())
 if args.use_amp16:
@@ -108,11 +90,7 @@ else:
 #### Training loop
 for epoch_num in range(start_epoch_num, args.epochs_num):
     logging.info(f"Start training epoch: {epoch_num:02d}")
-
-    if args.use_extra_datasets:
-        random_datasets = gsv_cities.GPMS_DATASETS.copy()
-    else: 
-        random_datasets = gsv_cities.TRAIN_CITIES.copy()
+    random_datasets = gsv_cities.TRAIN_CITIES.copy()
     random.shuffle(random_datasets)
     train_ds = gsv_cities.GSVCitiesDataset(args, cities=(random_datasets))
     train_dl = DataLoader(train_ds, batch_size= args.train_batch_size, num_workers=args.num_workers, pin_memory= True)
@@ -175,9 +153,6 @@ for epoch_num in range(start_epoch_num, args.epochs_num):
         "not_improved_num": not_improved_num
     }, is_best, filename=f"last_model.pth")
 
-    if args.use_lora:
-        model.module.save_pretrained(os.path.join(args.save_dir, "lora"))
-
     if not_improved_num == args.patience and not args.resume:
         logging.info(f"Performance did not improve for {not_improved_num} epochs. Stop training.")
         break
@@ -194,10 +169,7 @@ args.resume = f"{args.save_dir}/best_model.pth"
 model = vgl_network.VGLNet_Test(args)
 model = model.to("cuda")
 
-if args.use_lora:
-    model = PeftModel.from_pretrained(model, f"{args.save_dir}/lora")
-else:
-    model = util.resume_model(args, model)
+model = util.resume_model(args, model)
 
 model = torch.nn.DataParallel(model)
 

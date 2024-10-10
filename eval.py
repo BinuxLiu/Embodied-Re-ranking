@@ -3,12 +3,9 @@ import logging
 from datetime import datetime
 import torch
 
-from utils import parser, commons, util, test, test_vis, test_embodied, test_rerank
+from utils import parser, commons, util, test
 from models import vgl_network, dinov2_network
 from datasets import base_dataset
-
-from peft import PeftModel
-
 
 args = parser.parse_arguments()
 start_time = datetime.now()
@@ -20,7 +17,6 @@ logging.info(f"The outputs are being saved in {args.save_dir}")
 
 model = vgl_network.VGLNet_Test(args)
 
-
 model = model.to("cuda")
 if args.aggregation == "netvlad":
     if args.use_linear:
@@ -29,15 +25,10 @@ if args.aggregation == "netvlad":
             args.features_dim += 256
     else:
         args.features_dim = args.clusters * dinov2_network.CHANNELS_NUM[args.backbone]
-        
 
 if args.resume != None:
-    if args.use_lora:
-        logging.info(f"Resuming lora model from {args.resume}")
-        model = PeftModel.from_pretrained(model, args.resume)
-    else:
-        logging.info(f"Resuming model from {args.resume}")
-        model = util.resume_model(args, model)
+    logging.info(f"Resuming model from {args.resume}")
+    model = util.resume_model(args, model)
     
 model = torch.nn.DataParallel(model)
 
@@ -47,7 +38,6 @@ else:
     full_features_dim = args.features_dim
     args.features_dim = args.pca_dim
     pca = util.compute_pca(args, model, args.pca_dataset_folder, full_features_dim)
-
 
 test_ds = base_dataset.BaseDataset(args, "test")
 logging.info(f"Test set: {test_ds}")

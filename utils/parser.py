@@ -2,15 +2,13 @@ import argparse
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Cross-domain Switch-aware Re-parameterization for Visual Geo-Loclization",
+    parser = argparse.ArgumentParser(description="Embodied Re-ranking for Visual Place Recognition",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # Ablation parameters
+    parser.add_argument("--ranking", type=str, default="commen",
+                        choices=["commen", "er", "er_net", "cv_net", "superglobal", "qe", "dsa"])
     parser.add_argument("--resize_test_imgs", action="store_true",
                         help="traing or testing")
-    parser.add_argument("--use_lora", action="store_true",
-                        help="low rank adaption")
-    parser.add_argument("--use_extra_datasets", action="store_true",
-                        help="extra datasets")
     parser.add_argument("--num_hiddens", type=int, default=3,
                         help="channel attention")
     parser.add_argument("--ca_method", type=str, default="gem",
@@ -41,7 +39,7 @@ def parse_arguments():
                         choices=["dinov2_vitb14", "dinov2_vits14", "dinov2_vitl14", "dinov2_vitg14"], help="_")
     parser.add_argument("--aggregation", type=str, default="cosgem", choices=["salad", "netvlad", "cosgem", "cls", "g2m"])
     parser.add_argument("--trainable_layers", type=str, default="8, 9, 10, 11",
-                    help="Comma-separated list of layer indexes to be trained")
+                    help="comma-separated list of layer indexes to be trained")
     parser.add_argument("--features_dim", type=int, default=768,
                         help="features_dim")
     parser.add_argument("--clusters", type=int, default=64)
@@ -57,9 +55,9 @@ def parse_arguments():
     parser.add_argument('--recall_values', type=int, default=[1, 5, 10, 100], nargs="+",
                         help="Recalls to be computed, such as R@1.")
     # Paths parameters
-    parser.add_argument("--datasets_folder", type=str, default="/root/autodl-tmp", help="Path with all datasets")
+    # parser.add_argument("--datasets_folder", type=str, default="/root/autodl-tmp", help="Path with all datasets")
     # parser.add_argument("--datasets_folder", type=str, default="/media/hello/data1/binux/datasets", help="Path with all datasets")
-    # parser.add_argument("--datasets_folder", type=str, default="/mnt/sda3/Projects/npr/datasets", help="Path with all datasets")
+    parser.add_argument("--datasets_folder", type=str, default="/mnt/sda3/Projects/npr/datasets", help="Path with all datasets")
     parser.add_argument("--dataset_name", type=str, default="pitts30k", help="Relative path of the dataset")
     parser.add_argument("--queries_name", type=str, default=None,
                         help="Path with images to be queried")

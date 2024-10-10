@@ -17,68 +17,6 @@ TRAIN_CITIES = ['Bangkok', 'BuenosAires', 'LosAngeles', 'MexicoCity', 'OSL',
                 'PRG', 'WashingtonDC', 'Brussels', 'London',
                 'Melbourne', 'Osaka', 'PRS',]
 
-EXTRA_DATASETS_MSLS = ['MSLS0austin', 'MSLS0bangkok', 'MSLS0berlin', 'MSLS0boston', 'MSLS0budapest', 'MSLS0helsinki', 'MSLS0melbourne', 
-               'MSLS0moscow', 'MSLS0ottawa', 'MSLS0paris', 'MSLS0phoenix', 'MSLS0saopaulo', 'MSLS0tokyo', 'MSLS0toronto', 
-               'MSLS10austin', 'MSLS10bangkok', 'MSLS10berlin', 'MSLS10boston', 'MSLS10budapest', 'MSLS10helsinki', 
-               'MSLS10melbourne', 'MSLS10moscow', 'MSLS10ottawa', 'MSLS10paris', 'MSLS10phoenix', 'MSLS10saopaulo', 'MSLS10tokyo', 
-               'MSLS11austin', 'MSLS11bangkok', 'MSLS11berlin', 'MSLS11boston', 'MSLS11budapest', 'MSLS11helsinki', 'MSLS11melbourne', 
-               'MSLS11moscow', 'MSLS11ottawa', 'MSLS11paris', 'MSLS11phoenix', 'MSLS11saopaulo', 'MSLS11tokyo', 
-               'MSLS12austin', 'MSLS12bangkok', 'MSLS12berlin', 'MSLS12boston', 'MSLS12budapest', 'MSLS12helsinki', 
-               'MSLS12melbourne', 'MSLS12moscow', 'MSLS12ottawa', 'MSLS12paris', 'MSLS12phoenix', 'MSLS12saopaulo', 'MSLS12tokyo', 
-               'MSLS13austin', 'MSLS13bangkok', 'MSLS13berlin', 'MSLS13boston', 'MSLS13budapest', 'MSLS13helsinki', 'MSLS13melbourne', 
-               'MSLS13moscow', 'MSLS13ottawa', 'MSLS13paris', 'MSLS13phoenix', 'MSLS13saopaulo', 'MSLS13tokyo', 
-               'MSLS14austin', 'MSLS14bangkok', 'MSLS14berlin', 'MSLS14boston', 'MSLS14budapest', 'MSLS14helsinki', 
-               'MSLS14melbourne', 'MSLS14moscow', 'MSLS14ottawa', 'MSLS14paris', 'MSLS14phoenix', 'MSLS14saopaulo', 
-               'MSLS14tokyo', 'MSLS14toronto', 'MSLS15austin', 'MSLS15bangkok', 'MSLS15berlin', 'MSLS15boston', 'MSLS15budapest', 
-               'MSLS15helsinki', 'MSLS15melbourne', 'MSLS15moscow', 'MSLS15ottawa', 'MSLS15paris', 'MSLS15phoenix', 'MSLS15saopaulo', 'MSLS15tokyo', 'MSLS15toronto', 
-               'MSLS16austin', 'MSLS16bangkok', 'MSLS16berlin', 'MSLS16boston', 'MSLS16budapest', 'MSLS16helsinki', 
-               'MSLS16melbourne', 'MSLS16moscow', 'MSLS16ottawa', 'MSLS16paris', 'MSLS16phoenix', 'MSLS16saopaulo', 'MSLS16tokyo', 'MSLS16toronto', 
-               'MSLS17austin', 'MSLS17bangkok', 'MSLS17berlin', 'MSLS17boston', 'MSLS17budapest', 'MSLS17helsinki', 'MSLS17melbourne', 'MSLS17moscow', 
-               'MSLS17ottawa', 'MSLS17paris', 'MSLS17phoenix', 'MSLS17saopaulo', 'MSLS17tokyo', 
-               'MSLS18austin', 'MSLS18bangkok', 'MSLS18berlin', 'MSLS18boston', 'MSLS18budapest', 'MSLS18helsinki', 'MSLS18melbourne', 
-               'MSLS18moscow', 'MSLS18ottawa', 'MSLS18paris', 'MSLS18phoenix', 'MSLS18saopaulo', 'MSLS18tokyo', 
-               'MSLS19austin', 'MSLS19bangkok', 'MSLS19berlin', 'MSLS19boston', 'MSLS19budapest', 'MSLS19helsinki', 'MSLS19melbourne', 
-               'MSLS19moscow', 'MSLS19ottawa', 'MSLS19paris', 'MSLS19phoenix', 'MSLS19saopaulo', 'MSLS19tokyo', 'MSLS1austin', 
-               'MSLS1bangkok', 'MSLS1berlin', 'MSLS1boston', 'MSLS1budapest', 'MSLS1helsinki', 'MSLS1melbourne', 'MSLS1moscow', 
-               'MSLS1ottawa', 'MSLS1paris', 'MSLS1phoenix', 'MSLS1saopaulo', 'MSLS1tokyo', 'MSLS1toronto', 
-               'MSLS20austin', 'MSLS20bangkok', 'MSLS20berlin', 'MSLS20boston', 'MSLS20budapest', 'MSLS20helsinki', 'MSLS20melbourne', 
-               'MSLS20moscow', 'MSLS20ottawa', 'MSLS20paris', 'MSLS20phoenix', 'MSLS20saopaulo', 'MSLS20tokyo', 'MSLS20toronto', 
-               'MSLS21austin', 'MSLS21bangkok', 'MSLS21berlin', 'MSLS21boston', 'MSLS21budapest', 'MSLS21helsinki', 'MSLS21melbourne', 
-               'MSLS21moscow', 'MSLS21ottawa', 'MSLS21paris', 'MSLS21phoenix', 'MSLS21saopaulo', 'MSLS21tokyo', 'MSLS22austin', 
-               'MSLS22bangkok', 'MSLS22berlin', 'MSLS22boston', 'MSLS22budapest', 'MSLS22helsinki', 'MSLS22melbourne', 'MSLS22moscow', 
-               'MSLS22ottawa', 'MSLS22paris', 'MSLS22phoenix', 'MSLS22saopaulo', 'MSLS22tokyo', 
-               'MSLS23austin', 'MSLS23bangkok', 'MSLS23berlin', 'MSLS23boston', 'MSLS23budapest', 'MSLS23helsinki', 'MSLS23melbourne', 
-               'MSLS23moscow', 'MSLS23ottawa', 'MSLS23paris', 'MSLS23phoenix', 'MSLS23saopaulo', 'MSLS23tokyo', 'MSLS23toronto', 
-               'MSLS24austin', 'MSLS24bangkok', 'MSLS24berlin', 'MSLS24boston', 'MSLS24budapest', 'MSLS24helsinki', 'MSLS24melbourne', 
-               'MSLS24moscow', 'MSLS24ottawa', 'MSLS24paris', 'MSLS24phoenix', 'MSLS24saopaulo', 'MSLS24tokyo', 
-               'MSLS2austin', 'MSLS2bangkok', 'MSLS2berlin', 'MSLS2boston', 'MSLS2budapest', 'MSLS2helsinki', 'MSLS2melbourne', 'MSLS2moscow', 
-               'MSLS2ottawa', 'MSLS2paris', 'MSLS2phoenix', 'MSLS2saopaulo', 'MSLS2tokyo', 'MSLS2toronto', 'MSLS3austin', 'MSLS3bangkok', 
-               'MSLS3berlin', 'MSLS3boston', 'MSLS3budapest', 'MSLS3helsinki', 'MSLS3melbourne', 'MSLS3moscow', 'MSLS3ottawa', 'MSLS3paris', 
-               'MSLS3phoenix', 'MSLS3saopaulo', 'MSLS3tokyo', 'MSLS3toronto', 
-               'MSLS4austin', 'MSLS4bangkok', 'MSLS4berlin', 'MSLS4boston', 'MSLS4budapest', 'MSLS4helsinki', 'MSLS4melbourne', 'MSLS4moscow', 
-               'MSLS4ottawa', 'MSLS4paris', 'MSLS4phoenix', 'MSLS4saopaulo', 'MSLS4tokyo', 'MSLS4toronto', 
-               'MSLS5austin', 'MSLS5bangkok', 'MSLS5berlin', 'MSLS5boston', 'MSLS5budapest', 'MSLS5helsinki', 'MSLS5melbourne', 
-               'MSLS5moscow', 'MSLS5ottawa', 'MSLS5paris', 'MSLS5phoenix', 'MSLS5saopaulo', 'MSLS5tokyo', 
-               'MSLS6austin', 'MSLS6bangkok', 'MSLS6berlin', 'MSLS6boston', 'MSLS6budapest', 'MSLS6helsinki', 'MSLS6melbourne', 'MSLS6moscow', 
-               'MSLS6ottawa', 'MSLS6paris', 'MSLS6phoenix', 'MSLS6saopaulo', 'MSLS6tokyo', 
-               'MSLS7austin', 'MSLS7bangkok', 'MSLS7berlin', 'MSLS7boston', 'MSLS7budapest', 'MSLS7helsinki', 'MSLS7melbourne', 'MSLS7moscow', 
-               'MSLS7ottawa', 'MSLS7paris', 'MSLS7phoenix', 'MSLS7saopaulo', 'MSLS7tokyo', 'MSLS7toronto', 
-               'MSLS8austin', 'MSLS8bangkok', 'MSLS8berlin', 'MSLS8boston', 'MSLS8budapest', 'MSLS8helsinki', 'MSLS8melbourne', 'MSLS8moscow', 
-               'MSLS8ottawa', 'MSLS8paris', 'MSLS8phoenix', 'MSLS8saopaulo', 'MSLS8tokyo', 
-               'MSLS9austin', 'MSLS9bangkok', 'MSLS9berlin', 'MSLS9boston', 'MSLS9budapest', 'MSLS9helsinki', 'MSLS9melbourne', 'MSLS9moscow', 'MSLS9ottawa', 
-               'MSLS9paris', 'MSLS9phoenix', 'MSLS9saopaulo', 'MSLS9tokyo', 'MSLS9toronto', 'MSLS9trondheim']
-
-
-EXTRA_DATASETS_SF = ["SFXL0", "SFXL1", "SFXL2"]
-
-EXTRA_DATASETS_PITTS = ['Pittsburgh2A','Pittsburgh2B','Pittsburgh2C','Pittsburgh2D',]
-
-COMPARISON_FOR_CM = EXTRA_DATASETS_MSLS + TRAIN_CITIES
-
-EXTRA_DATASETS = EXTRA_DATASETS_PITTS + EXTRA_DATASETS_SF + EXTRA_DATASETS_MSLS
-
-GPMS_DATASETS = EXTRA_DATASETS + TRAIN_CITIES
-
 class GSVCitiesDataset(Dataset):
     def __init__(self, args, cities=['London', 'Boston'], img_per_place=4, min_img_per_place=4):
         super(GSVCitiesDataset, self).__init__()

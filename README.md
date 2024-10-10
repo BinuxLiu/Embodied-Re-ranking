@@ -1,6 +1,4 @@
-# SuperPlace
-
-Super Alignment, Embodied Re-ranking and Two Improved Aggregation for Visual Place Recognition
+# Embodied Re-ranking
 
 
 ## Eval
