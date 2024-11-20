@@ -53,8 +53,8 @@ class DINOv2(nn.Module):
         self.num_register_tokens = num_register_tokens
 
         # pretrained_model_path = f"/media/hello/data1/binux/checkpoints/{backbone}_pretrain.pth"
-        pretrained_model_path = f"/root/autodl-tmp/{backbone}_pretrain.pth"
-        # pretrained_model_path = f"/home/ubuntu/.cache/torch/hub/checkpoints/{backbone}_pretrain.pth"
+        # pretrained_model_path = f"/root/autodl-tmp/{backbone}_pretrain.pth"
+        pretrained_model_path = f"/home/ubuntu/.cache/torch/hub/checkpoints/{backbone}_pretrain.pth"
 
         model_state_dict = torch.load(pretrained_model_path)
         self.model.load_state_dict(model_state_dict, strict = False)

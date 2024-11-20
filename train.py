@@ -74,8 +74,7 @@ if not args.resume:
     scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=1, end_factor=0.2, total_iters=4000)
 criterion = losses.MultiSimilarityLoss(alpha=1.0, beta=50, base=0.0, distance=distances.CosineSimilarity())
 miner = miners.MultiSimilarityMiner(epsilon=0.1, distance=distances.CosineSimilarity())
-if args.use_amp16:
-    scaler = torch.cuda.amp.GradScaler()
+scaler = torch.cuda.amp.GradScaler()
 
 #### Resume model, optimizer, and other training parameters
 if args.resume:
@@ -106,20 +105,13 @@ for epoch_num in range(start_epoch_num, args.epochs_num):
         
         optimizer.zero_grad()
 
-        if not args.use_amp16:
+        with torch.cuda.amp.autocast():
             features = model(images)
             miner_outputs = miner(features, labels)
             loss = criterion(features, labels, miner_outputs)
-            loss.backward()
-            optimizer.step()
-        else:
-            with torch.cuda.amp.autocast():
-                features = model(images)
-                miner_outputs = miner(features, labels)
-                loss = criterion(features, labels, miner_outputs)
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
             
         if not args.resume:
             scheduler.step()

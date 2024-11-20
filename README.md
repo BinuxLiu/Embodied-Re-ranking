@@ -4,7 +4,7 @@
 ## Eval
 
 ```shell
-CUDA_VISIBLE_DEVICES=0,1,2,3 python eval.py --aggregation g2m --backbone dinov2_vitb14 --dataset_name tokyo247 --infer_batch_size 256 --use_ca --num_hiddens 64 --resume logs/
+python eval.py --aggregation g2m --backbone dinov2_vitb14 --dataset_name tokyo247 --infer_batch_size 256 --use_ca --num_hiddens 64 --resume logs/
 ```
 
 

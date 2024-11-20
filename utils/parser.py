@@ -5,8 +5,8 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description="Embodied Re-ranking for Visual Place Recognition",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # Ablation parameters
-    parser.add_argument("--ranking", type=str, default="commen",
-                        choices=["commen", "er", "er_net", "cv_net", "superglobal", "qe", "dsa"])
+    parser.add_argument("--ranking", type=str, default="normal",
+                        choices=["normal", "er", "er_net", "cv_net", "superglobal", "qe", "dsa"])
     parser.add_argument("--resize_test_imgs", action="store_true",
                         help="traing or testing")
     parser.add_argument("--num_hiddens", type=int, default=3,
@@ -57,7 +57,7 @@ def parse_arguments():
     # Paths parameters
     # parser.add_argument("--datasets_folder", type=str, default="/root/autodl-tmp", help="Path with all datasets")
     # parser.add_argument("--datasets_folder", type=str, default="/media/hello/data1/binux/datasets", help="Path with all datasets")
-    parser.add_argument("--datasets_folder", type=str, default="/mnt/sda3/Projects/npr/datasets", help="Path with all datasets")
+    parser.add_argument("--datasets_folder", type=str, default="/mnt/sda3/2024_Projects/npr/datasets", help="Path with all datasets")
     parser.add_argument("--dataset_name", type=str, default="pitts30k", help="Relative path of the dataset")
     parser.add_argument("--queries_name", type=str, default=None,
                         help="Path with images to be queried")
