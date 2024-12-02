@@ -86,50 +86,15 @@ def test_efficient_ram_usage(args, eval_ds, model):
         
     return recalls, recalls_str
 
-def test(args, eval_ds, model , pca = None):
+def test(args, eval_ds, queries_features, database_features):
     """Compute features of the given dataset and compute the recalls."""
     
-    if args.efficient_ram_testing:
-        return test_efficient_ram_usage(args, eval_ds, model)
-    
-    model = model.eval()
-    with torch.no_grad():
-        logging.debug("Extracting database features for evaluation/testing")
-        # For database use "hard_resize", although it usually has no effect because database images have same resolution
-        database_subset_ds = Subset(eval_ds, list(range(eval_ds.database_num)))
-        database_dataloader = DataLoader(dataset=database_subset_ds, num_workers=args.num_workers,
-                                         batch_size=args.infer_batch_size, pin_memory=True)
-        all_features = np.empty((len(eval_ds), args.features_dim), dtype="float32")
-
-        for inputs, indices in tqdm(database_dataloader, ncols=100):
-            features = model(inputs.to("cuda"))
-            features = features.cpu().numpy()
-            if pca is not None:
-                features = pca.transform(features)
-            all_features[indices.numpy(), :] = features
-        
-        # print(model.all_time / eval_ds.database_num)
-        
-        logging.debug("Extracting queries features for evaluation/testing")
-        queries_infer_batch_size = args.infer_batch_size
-        # queries_infer_batch_size = 1
-        queries_subset_ds = Subset(eval_ds, list(range(eval_ds.database_num, eval_ds.database_num+eval_ds.queries_num)))
-        queries_dataloader = DataLoader(dataset=queries_subset_ds, num_workers=args.num_workers,
-                                        batch_size=queries_infer_batch_size, pin_memory=True)
-        for inputs, indices in tqdm(queries_dataloader, ncols=100):
-            features = model(inputs.to("cuda"))
-            features = features.cpu().numpy()
-            if pca is not None:
-                features = pca.transform(features)
-            
-            all_features[indices.numpy(), :] = features
-    
-    queries_features = all_features[eval_ds.database_num:]
-    database_features = all_features[:eval_ds.database_num]
+    # if args.efficient_ram_testing:
+    #     return test_efficient_ram_usage(args, eval_ds, model)
     
     faiss_index = faiss.IndexFlatL2(args.features_dim)
     faiss_index.add(database_features)
-    del database_features, all_features
+    del database_features
     
     logging.debug("Calculating recalls")
     distances, predictions = faiss_index.search(queries_features, max(args.recall_values))

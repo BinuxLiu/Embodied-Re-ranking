@@ -4,6 +4,7 @@ import torch.nn.functional as F
 from torch.nn.parameter import Parameter
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def gem(x, p=torch.ones(1)*3, eps: float = 1e-6, k = 1):
@@ -120,6 +121,7 @@ class G2M(nn.Module):
         use_cls=False,
         use_ca=False,
         pooling_method="gem",
+        vis = False
     ):
         super().__init__()
 
@@ -129,6 +131,7 @@ class G2M(nn.Module):
         self.num_channels = num_channels
         self.fc_output_dim = fc_output_dim
         self.cls_channels = self.fc_output_dim
+        self.vis = vis
 
 
         self.gem = GeM()
@@ -152,8 +155,24 @@ class G2M(nn.Module):
 
         self.norm = L2Norm()
 
+    def vis_atted_feature_map(self, x):
+
+        x_feat, _ = x # x_feat is torch.Size([1, 768, 16, 16])
+
+        x_atte = self.channel_attention(x_feat) # x_feat is torch.Size([1, 768])
+        x_atte = x_atte.unsqueeze(-1).unsqueeze(-1)  # Shape: [1, 768, 1, 1]
+        x_weighted = x_feat * x_atte  # Shape: [1, 768, 16, 16]
+        x_weighted = torch.sum(x_weighted, dim=1, keepdim=True)
+        
+        att_map = x_weighted[0, 0].detach().cpu().numpy()  # Extract the 2D feature map
+        plt.imshow(att_map, cmap='viridis')
+        plt.axis('off')
+        plt.savefig(f"pca.jpg")
+
     def forward(self, x):
         x_feat, x_cls = x
+        
+        # self.vis_atted_feature_map(x)
 
         if self.use_ca:
             x_atte = self.channel_attention(x_feat)
@@ -168,8 +187,9 @@ class G2M(nn.Module):
         if self.use_cls:
             x_cls = self.cls_proj(x_cls)
             x_feat = self.norm(torch.cat([x_cls, x_feat], dim=-1))
-
+            
         return x_feat
+    
 
 
 class CLS(nn.Module):
@@ -201,20 +221,22 @@ def main():
         use_ca=True,
         pooling_method="gem",
     ).to(device)
+    
+    agg.vis_atted_feature_map(x, num_channels_to_show=3)
 
-    import time
+    # import time
     
-    print_nb_params(agg)
+    # print_nb_params(agg)
     
-    start_time = time.time()
-    for _ in range(3000): 
-        with torch.cuda.amp.autocast():  
-            output = agg(x)  
-    end_time = time.time()
+    # start_time = time.time()
+    # for _ in range(3000): 
+    #     with torch.cuda.amp.autocast():  
+    #         output = agg(x)  
+    # end_time = time.time()
    
-    average_time = (end_time - start_time) / 3000  
-    print(f'Average time per pass: {average_time:.6f} seconds')
-    print(output.shape)
+    # average_time = (end_time - start_time) / 3000  
+    # print(f'Average time per pass: {average_time:.6f} seconds')
+    # print(output.shape)
 
 if __name__ == "__main__":
     main()

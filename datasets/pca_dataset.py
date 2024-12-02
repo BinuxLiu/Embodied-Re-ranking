@@ -20,3 +20,19 @@ class PCADataset(data.Dataset):
     
     def __len__(self):
         return len(self.images_paths)
+
+class general_dataset(data.Dataset):
+    def __init__(self, args, dataset_folder="super_demo/amstertime/"):
+        dataset_folder_full_path = os.path.join(args.datasets_folder, dataset_folder)
+        if not os.path.exists(dataset_folder_full_path):
+            raise FileNotFoundError(f"Folder {dataset_folder_full_path} does not exist")
+        self.images_paths = sorted(glob(os.path.join(dataset_folder_full_path, "**", "*.jpg"), recursive=True))
+        self.transform = transforms.Compose([transforms.Resize(args.resize, interpolation=transforms.InterpolationMode.BILINEAR) if args.resize_test_imgs else lambda x: x,
+                                             transforms.ToTensor(),
+                                             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),])
+    
+    def __getitem__(self, index):
+        return self.transform(Image.open(self.images_paths[index]).convert("RGB"))
+    
+    def __len__(self):
+        return len(self.images_paths)

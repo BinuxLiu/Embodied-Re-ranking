@@ -70,4 +70,5 @@ def get_aggregation(args):
             use_cls=args.use_cls,
             use_ca=args.use_ca,
             pooling_method=args.ca_method,
+            vis = False,
         )

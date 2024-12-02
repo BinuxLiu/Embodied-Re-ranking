@@ -40,9 +40,18 @@ class BaseDataset(data.Dataset):
                                                              return_distance=False)
         
         self.soft_positives_per_database = knn.radius_neighbors(self.database_utms,
-                                                             radius=5,
+                                                             radius=args.conf_threshold,
                                                              return_distance=False)
         
+        self.d_distances, self.d_indices = knn.kneighbors(self.database_utms, n_neighbors=len(self.database_utms))
+        
+        self.n_samples = self.database_utms.shape[0]
+        self.similarity_matrix = np.zeros((self.n_samples, self.n_samples))
+
+        for i in range(self.n_samples):
+            for j, dist in zip(self.d_indices[i], self.d_distances[i]):
+                self.similarity_matrix[i, j] = 1 / (1 + dist)
+                
         self.images_paths = list(self.database_paths) + list(self.queries_paths)
         
         self.database_num = len(self.database_paths)
@@ -71,3 +80,8 @@ class BaseDataset(data.Dataset):
     
     def get_positives_database(self):
         return self.soft_positives_per_database
+    
+    def get_sim_database(self):
+        return self.similarity_matrix
+        
+        
