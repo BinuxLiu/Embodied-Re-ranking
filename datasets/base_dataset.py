@@ -14,11 +14,14 @@ IMAGENET_MEAN_STD = {'mean': [0.485, 0.456, 0.406],
 class BaseDataset(data.Dataset):
     """Dataset with images from database and queries, used for inference (testing and building cache).
     """
-    def __init__(self, args, split="train"):
+    def __init__(self, args, split="train", city_name = None):
         super().__init__()
         self.args = args
         self.dataset_name = args.dataset_name
-        self.dataset_folder = os.path.join(args.datasets_folder, self.dataset_name, "images", split)
+        if city_name == None:
+            self.dataset_folder = os.path.join(args.datasets_folder, self.dataset_name, "images", split)
+        else:
+            self.dataset_folder = os.path.join(args.datasets_folder, self.dataset_name, "images", split, city_name)
         self.queries_name = args.queries_name if args.queries_name != None else "queries"
         self.resize = args.resize
         
@@ -39,18 +42,21 @@ class BaseDataset(data.Dataset):
                                                              radius=args.val_positive_dist_threshold,
                                                              return_distance=False)
         
-        self.soft_positives_per_database = knn.radius_neighbors(self.database_utms,
-                                                             radius=args.conf_threshold,
-                                                             return_distance=False)
+        if city_name == None:
+            self.soft_positives_per_database = knn.radius_neighbors(self.database_utms,
+                                                                radius=args.conf_threshold,
+                                                                return_distance=False)
+        else:
+            self.soft_positives_per_database = None
         
-        self.d_distances, self.d_indices = knn.kneighbors(self.database_utms, n_neighbors=len(self.database_utms))
+        # self.d_distances, self.d_indices = knn.kneighbors(self.database_utms, n_neighbors=len(self.database_utms))
         
-        self.n_samples = self.database_utms.shape[0]
-        self.similarity_matrix = np.zeros((self.n_samples, self.n_samples))
+        # self.n_samples = self.database_utms.shape[0]
+        # self.similarity_matrix = np.zeros((self.n_samples, self.n_samples))
 
-        for i in range(self.n_samples):
-            for j, dist in zip(self.d_indices[i], self.d_distances[i]):
-                self.similarity_matrix[i, j] = 1 / (1 + dist)
+        # for i in range(self.n_samples):
+        #     for j, dist in zip(self.d_indices[i], self.d_distances[i]):
+        #         self.similarity_matrix[i, j] = 1 / (1 + dist)
                 
         self.images_paths = list(self.database_paths) + list(self.queries_paths)
         
@@ -81,7 +87,7 @@ class BaseDataset(data.Dataset):
     def get_positives_database(self):
         return self.soft_positives_per_database
     
-    def get_sim_database(self):
-        return self.similarity_matrix
+    # def get_sim_database(self):
+    #     return self.similarity_matrix
         
         

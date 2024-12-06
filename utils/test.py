@@ -86,6 +86,47 @@ def test_efficient_ram_usage(args, eval_ds, model):
         
     return recalls, recalls_str
 
+def test_feature(args, test_ds, model):
+    
+    model = model.eval()
+    with torch.no_grad():
+        # For database use "hard_resize", although it usually has no effect because database images have same resolution
+        database_subset_ds = Subset(test_ds, list(range(test_ds.database_num)))
+        database_dataloader = DataLoader(dataset=database_subset_ds, num_workers=args.num_workers,
+                                            batch_size=args.infer_batch_size, pin_memory=True)
+        all_features = np.empty((len(test_ds), args.features_dim), dtype="float32")
+        database_features_dir = os.path.join(test_ds.dataset_folder, "database_features.npy")
+        queries_features_dir = os.path.join(test_ds.dataset_folder, "queries_features.npy")
+
+        if os.path.isfile(database_features_dir) == 1:
+            database_features = np.load(database_features_dir)
+        else: 
+            for images, indices in tqdm(database_dataloader, ncols=100):
+                features = model(images.to("cuda"))
+                features = features.cpu().numpy()
+                all_features[indices.numpy(), :] = features 
+            database_features = all_features[:test_ds.database_num]
+            np.save(database_features_dir, database_features)
+            
+        queries_infer_batch_size = args.infer_batch_size
+        # queries_infer_batch_size = 1
+        queries_subset_ds = Subset(test_ds, list(range(test_ds.database_num, test_ds.database_num+test_ds.queries_num)))
+        queries_dataloader = DataLoader(dataset=queries_subset_ds, num_workers=args.num_workers,
+                                        batch_size=queries_infer_batch_size, pin_memory=True)
+        
+        if os.path.isfile(queries_features_dir) == 1:
+            queries_features = np.load(queries_features_dir)
+        else: 
+            for inputs, indices in tqdm(queries_dataloader, ncols=100):
+                features = model(inputs.to("cuda"))
+                features = features.cpu().numpy()
+                all_features[indices.numpy(), :] = features
+            
+            queries_features = all_features[test_ds.database_num:]
+            np.save(queries_features_dir, queries_features)
+    
+    return database_features, queries_features
+
 def test(args, eval_ds, queries_features, database_features):
     """Compute features of the given dataset and compute the recalls."""
     
@@ -96,7 +137,6 @@ def test(args, eval_ds, queries_features, database_features):
     faiss_index.add(database_features)
     del database_features
     
-    logging.debug("Calculating recalls")
     distances, predictions = faiss_index.search(queries_features, max(args.recall_values))
     
     if args.dataset_name == "msls_challenge":
@@ -131,4 +171,4 @@ def test(args, eval_ds, queries_features, database_features):
                                 args.save_dir, args.save_only_wrong_preds)
 
 
-    return recalls, recalls_str
+    return recalls, recalls_str, predictions

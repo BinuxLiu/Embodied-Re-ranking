@@ -50,57 +50,16 @@ else:
 test_ds = base_dataset.BaseDataset(args, "test")
 logging.info(f"Test set: {test_ds}")
 
-model = model.eval()
-with torch.no_grad():
-    logging.debug("Extracting database features for evaluation/testing")
-    # For database use "hard_resize", although it usually has no effect because database images have same resolution
-    database_subset_ds = Subset(test_ds, list(range(test_ds.database_num)))
-    database_dataloader = DataLoader(dataset=database_subset_ds, num_workers=args.num_workers,
-                                        batch_size=args.infer_batch_size, pin_memory=True)
-    all_features = np.empty((len(test_ds), args.features_dim), dtype="float32")
-    database_features_dir = os.path.join(test_ds.dataset_folder, "database_features.npy")
-    queries_features_dir = os.path.join(test_ds.dataset_folder, "queries_features.npy")
-
-    if os.path.isfile(database_features_dir) == 1:
-        database_features = np.load(database_features_dir)
-    else: 
-        for images, indices in tqdm(database_dataloader, ncols=100):
-            features = model(images.to("cuda"))
-            features = features.cpu().numpy()
-            if pca is not None:
-                features = pca.transform(features)
-            all_features[indices.numpy(), :] = features 
-        database_features = all_features[:test_ds.database_num]
-        np.save(database_features_dir, database_features)
-    
-    logging.debug("Extracting queries features for evaluation/testing")
-    queries_infer_batch_size = args.infer_batch_size
-    # queries_infer_batch_size = 1
-    queries_subset_ds = Subset(test_ds, list(range(test_ds.database_num, test_ds.database_num+test_ds.queries_num)))
-    queries_dataloader = DataLoader(dataset=queries_subset_ds, num_workers=args.num_workers,
-                                    batch_size=queries_infer_batch_size, pin_memory=True)
-    
-    if os.path.isfile(queries_features_dir) == 1:
-        queries_features = np.load(queries_features_dir)
-    else: 
-        for inputs, indices in tqdm(queries_dataloader, ncols=100):
-            features = model(inputs.to("cuda"))
-            features = features.cpu().numpy()
-            if pca is not None:
-                features = pca.transform(features)
-            all_features[indices.numpy(), :] = features
-        
-        queries_features = all_features[test_ds.database_num:]
-        np.save(queries_features_dir, queries_features)
-
 # Then, we can test difference methods
 
+database_features, queries_features = test.test_feature(args, test_ds, model)
+
 if args.ranking == "normal":
-    recalls, recalls_str = test.test(args, test_ds, queries_features, database_features)
+    recalls, recalls_str, _ = test.test(args, test_ds, queries_features, database_features)
 elif args.ranking == "er":
     recalls, recalls_str = test_embodied.test(args, test_ds, queries_features, database_features)
 elif args.ranking == "er_net":
-    pass
+    recalls, recalls_str = test_ernet.test(args, test_ds, queries_features, database_features)
 
 logging.info(f"Recalls on {test_ds}: {recalls_str}")
 logging.info(f"Finished in {str(datetime.now() - start_time)[:-7]}")

@@ -52,7 +52,7 @@ def parse_arguments():
     parser.add_argument("--num_workers", type=int, default=16, help="num_workers for all dataloaders")
     parser.add_argument('--resize', type=int, default=[224, 224], nargs=2, help="Resizing shape for images (HxW).")
     parser.add_argument("--val_positive_dist_threshold", type=int, default=25, help="_")
-    parser.add_argument("--conf_threshold", type=int, default=25, help="_")
+    parser.add_argument("--conf_threshold", type=int, default=5, help="_")
     parser.add_argument('--recall_values', type=int, default=[1, 5, 10, 100], nargs="+",
                         help="Recalls to be computed, such as R@1.")
     # Paths parameters
@@ -71,6 +71,7 @@ def parse_arguments():
     parser.add_argument("--save_only_wrong_preds", action="store_true",
                         help="set to true if you want to save predictions only for "
                         "wrongly predicted queries")
+    # ER-Net parameters
     
     args = parser.parse_args()
 
