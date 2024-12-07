@@ -19,7 +19,7 @@ from ranking import test_embodied, rank_loss
 import faiss
 from sklearn.metrics.pairwise import cosine_similarity
 
-cities_name = ["melbourne", "london", "boston", "melbourne", "amsterdam","helsinki",
+cities_name = ["trondheim", "london", "boston", "melbourne", "amsterdam","helsinki",
               "tokyo","toronto","saopaulo","moscow","zurich","paris","bangkok",
               "budapest","austin","berlin","ottawa","phoenix","goa","amman","nairobi","manila"]
 
